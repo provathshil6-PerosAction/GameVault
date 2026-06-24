@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prabhas · Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f8f8;
+    --border: #c8c8c8;
+    --border-dark: #999;
+    --text: #0f0f0f;
+    --muted: #777;
+    --dim: #bbb;
+    --shadow-3d: #a0a0a0;
+    --shadow-3d-dark: #888;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 3D BUTTON MIXIN ── */
+  .btn-3d {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.4rem;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.02em;
+    position: relative;
+    transition: transform 0.1s, box-shadow 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .btn-3d:active {
+    transform: translate(3px, 3px);
+    box-shadow: none !important;
+  }
+
+  .btn-solid {
+    background: #111;
+    color: #fff;
+    border: 2px solid #111;
+    box-shadow: 4px 4px 0px #555;
+  }
+  .btn-solid:hover { box-shadow: 6px 6px 0px #444; transform: translate(-1px,-1px); }
+
+  .btn-ghost-3d {
+    background: #fff;
+    color: #111;
+    border: 2px solid #111;
+    box-shadow: 4px 4px 0px #aaa;
+  }
+  .btn-ghost-3d:hover { box-shadow: 6px 6px 0px #999; transform: translate(-1px,-1px); }
+
+  .btn-sm {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.73rem;
+    box-shadow: 3px 3px 0px #aaa;
+  }
+  .btn-sm:hover { box-shadow: 4px 4px 0px #999; transform: translate(-1px,-1px); }
+  .btn-sm:active { transform: translate(3px,3px); box-shadow: none !important; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid #111;
+    box-shadow: 0 3px 0 var(--shadow-3d);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 58px;
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+  .nav-links a {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    padding: 0.3rem 0.7rem;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-links a:hover {
+    color: var(--text);
+    border-color: var(--border);
+    box-shadow: 2px 2px 0 var(--shadow-3d);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 10rem 2.5rem 6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-bottom: 2px solid #111;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    box-shadow: 2px 2px 0 var(--shadow-3d);
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    font-weight: 300;
+    color: var(--muted);
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 400px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  /* STATS — 3D bordered boxes */
+  .hero-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    padding: 1rem 1.8rem;
+    text-align: center;
+    background: #fff;
+    border: 2px solid #111;
+    box-shadow: 5px 5px 0 #999;
+    min-width: 100px;
+  }
+
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+    display: block;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2.5rem;
+  }
+
+  .wrap + .wrap { padding-top: 0; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #111;
+  }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--dim);
+  }
+
+  /* ── FEATURED CARD ── */
+  .featured-card {
+    border: 2px solid #111;
+    background: #fff;
+    box-shadow: 7px 7px 0 #aaa;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+
+  .featured-card:hover {
+    box-shadow: 10px 10px 0 #888;
+    transform: translate(-2px,-2px);
+  }
+
+  .featured-art {
+    background: var(--surface);
+    border-right: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    min-height: 300px;
+  }
+
+  .featured-info { padding: 2.5rem; }
+
+  .featured-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .featured-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .featured-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .featured-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tag {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.6rem;
+    border: 1.5px solid #111;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    background: #fff;
+    box-shadow: 2px 2px 0 #ccc;
+  }
+
+  .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  /* ── GAME ROWS ── */
+  .games-list { display: flex; flex-direction: column; gap: 0; }
+
+  .game-row {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 1rem;
+    border: 2px solid transparent;
+    border-bottom: 1.5px solid #e0e0e0;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    margin-bottom: 0.6rem;
+  }
+
+  .game-row:last-child { margin-bottom: 0; }
+
+  .game-row:hover {
+    border: 2px solid #111;
+    box-shadow: 5px 5px 0 #bbb;
+    transform: translate(-2px,-2px);
+    background: #fff;
+  }
+
+  .game-thumb-sm {
+    width: 88px;
+    height: 58px;
+    border: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    background: var(--surface);
+    box-shadow: 3px 3px 0 #bbb;
+  }
+
+  .game-meta { min-width: 0; }
+
+  .game-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .game-info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .game-desc-short { font-size: 0.78rem; color: var(--muted); }
+  .dot { color: var(--dim); }
+  .game-engine-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+  }
+
+  .game-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .game-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.18rem 0.5rem;
+    border: 1.5px solid #111;
+    color: var(--text);
+    background: #fff;
+    box-shadow: 2px 2px 0 #bbb;
+  }
+
+  .badge-new { background: #111; color: #fff; box-shadow: 2px 2px 0 #555; }
+
+  .game-platform {
+    font-size: 0.68rem;
+    color: var(--dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 2px solid #111;
+    box-shadow: 0 -3px 0 #ccc;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer .mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .footer-links { display: flex; gap: 0.6rem; }
+  .footer-links a {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.3rem 0.7rem;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    box-shadow: 2px 2px 0 #ccc;
+    transition: all 0.15s;
+    font-family: 'DM Mono', monospace;
+  }
+  .footer-links a:hover {
+    color: var(--text);
+    border-color: #111;
+    box-shadow: 3px 3px 0 #aaa;
+    transform: translate(-1px,-1px);
+  }
+
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.2rem; }
+    .nav-links a span { display: none; }
+    .hero { padding: 8rem 1.2rem 4rem; }
+    .wrap { padding: 3.5rem 1.2rem; }
+    .game-row { grid-template-columns: 64px 1fr; }
+    .game-right { display: none; }
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-art { border-right: none; border-bottom: 2px solid #111; min-height: 140px; font-size: 3rem; }
+    footer { flex-direction: column; gap: 1.2rem; text-align: center; }
+    .hero-stats { gap: 0.75rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+    .btn-3d, .game-row, .featured-card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">prabhas.dev</a>
+  <div class="nav-links">
+    <a href="#games">Games</a>
+    <a href="#about">About</a>
+    <a href="mailto:provathshil6@gmail.com" class="btn-3d btn-solid btn-sm">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero reveal">
+  <p class="hero-tag">// indie game developer</p>
+  <h1>Games built<br><em>by one.</em></h1>
+  <p class="hero-sub">Mobile-first 3D games made in Godot 4 on Android. Every mechanic, every line of code — solo.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">6</span>
+      <span class="stat-label">Games</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Years</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">12k</span>
+      <span class="stat-label">Downloads</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<div class="wrap reveal" id="games">
+  <div class="section-header">
+    <span class="section-title">Featured</span>
+  </div>
+  <div class="featured-card">
+    <div class="featured-art">🌌</div>
+    <div class="featured-info">
+      <div class="featured-label">Godot 4 · Android · 3D</div>
+      <div class="featured-title">Void Drift</div>
+      <div class="featured-desc">A third-person space explorer. Navigate fractured asteroid fields, outrun gravitational collapse, and find the signal at the edge of the known map. Custom SpringArm3D camera with full touch controls.</div>
+      <div class="featured-tags">
+        <span class="tag">3D</span>
+        <span class="tag">Exploration</span>
+        <span class="tag">Touch Controls</span>
+        <span class="tag">Open World</span>
+      </div>
+      <div class="btn-row">
+        <a href="#" class="btn-3d btn-solid">Download APK</a>
+        <a href="https://perosaction.itch.io/" target="_blank" class="btn-3d btn-ghost-3d">itch.io →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAMES LIST -->
+<div class="wrap" style="padding-top:0;">
+  <div class="section-header">
+    <span class="section-title">All Games</span>
+    <span class="section-count">6 titles</span>
+  </div>
+
+  <div class="games-list">
+
+    <div class="game-row reveal">
+      <div class="game-thumb-sm">🌿</div>
+      <div class="game-meta">
+        <div class="game-name">Root Protocol</div>
+        <div class="game-info-row">
+          <span class="game-desc-short">Survival puzzle in an overgrown megastructure</span>
+          <span class="dot">·</span>
+          <span class="game-engine-tag">Godot 4</span>
+        </div>
+      </div>
+      <div class="game-right">
+        <span class="game-badge badge-new">New</span>
+        <span class="game-platform">Android</span>
+      </div>
+    </div>
+
+    <div class="game-row reveal">
+      <div class="game-thumb-sm">⚔️</div>
+      <div class="game-meta">
+        <div class="game-name">Ember Keep</div>
+        <div class="game-info-row">
+          <span class="game-desc-short">Tower defense roguelite — built in 72 hrs</span>
+          <span class="dot">·</span>
+          <span class="game-engine-tag">Godot 4</span>
+        </div>
+      </div>
+      <div class="game-right">
+        <span class="game-badge">Jam</span>
+        <span class="game-platform">Android</span>
+      </div>
+    </div>
+
+    <div class="game-row reveal">
+      <div class="game-thumb-sm">🌊</div>
+      <div class="game-meta">
+        <div class="game-name">Abyss Walker</div>
+        <div class="game-info-row">
+          <span class="game-desc-short">Deep-sea platformer with pressure mechanics</span>
+          <span class="dot">·</span>
+          <span class="game-engine-tag">Godot 4</span>
+        </div>
+      </div>
+      <div class="game-right">
+        <span class="game-badge">2.5D</span>
+        <span class="game-platform">Android</span>
+      </div>
+    </div>
+
+    <div class="game-row reveal">
+      <div class="game-thumb-sm">🔥</div>
+      <div class="game-meta">
+        <div class="game-name">Ashfall</div>
+        <div class="game-info-row">
+          <span class="game-desc-short">Endless runner in a post-eruption world</span>
+          <span class="dot">·</span>
+          <span class="game-engine-tag">Godot 3</span>
+        </div>
+      </div>
+      <div class="game-right">
+        <span class="game-badge">Runner</span>
+        <span class="game-platform">Android</span>
+      </div>
+    </div>
+
+    <div class="game-row reveal">
+      <div class="game-thumb-sm">🐍</div>
+      <div class="game-meta">
+        <div class="game-name">Neon Snake</div>
+        <div class="game-info-row">
+          <span class="game-desc-short">Classic rebuilt — synthwave, combos, leaderboard</span>
+          <span class="dot">·</span>
+          <span class="game-engine-tag">HTML5</span>
+        </div>
+      </div>
+      <div class="game-right">
+        <span class="game-badge">First</span>
+        <span class="game-platform">Browser</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="mono">© 2026 prabhas.dev</span>
+  <div class="footer-links">
+    <a href="https://perosaction.itch.io/" target="_blank">itch.io</a>
+    <a href="#">GitHub</a>
+    <a href="mailto:provathshil6@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
